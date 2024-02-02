@@ -19,7 +19,7 @@ const bot = new Client({
 	],
 });
 
-bot.once("ready", (client) => {
+bot.once("ready", async (client) => {
 	console.log("Bot is ready");
 	console.log(
 		`serving ${client.guilds.cache.map(v => v.name).join(', ')} guilds`,

@@ -1,4 +1,5 @@
 import { Client, Partials } from "discord.js";
+import { chatInputCommands } from "./commands";
 
 const bot = new Client({
 	intents: [
@@ -26,6 +27,24 @@ bot.once("ready", async (client) => {
 	);
 });
 
+bot.on("interactionCreate", async (interaction) => {
+	try {
+		if (interaction.isChatInputCommand()) {
+			return void chatInputCommands.find(c => c.data.name === interaction.commandName)?.execute(interaction).catch(console.error);
+		}
 
+	} catch (error) {
+		console.error(error);
+	}
+
+})
 
 bot.login(Bun.env.BOT_TOKEN).then(() => console.log("Logged In"));
+
+process.on('unhandledRejection', (reason, p) => {
+	console.log(`Unhandled Rejection: ${reason}`);
+});
+
+process.on('uncaughtException', (reason, p) => {
+	console.log(`Unhandled Exception: ${reason}`);
+});

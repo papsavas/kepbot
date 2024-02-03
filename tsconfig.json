@@ -19,7 +19,9 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
+      "~db": ["./src/db"],
       "~/*": ["./src/*"],
+      
       
     }
   }

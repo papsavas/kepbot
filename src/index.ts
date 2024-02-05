@@ -48,3 +48,12 @@ process.on('unhandledRejection', (reason, p) => {
 process.on('uncaughtException', (reason, p) => {
 	console.log(`Unhandled Exception: ${reason}`);
 });
+
+import { Elysia } from 'elysia';
+
+new Elysia()
+	.get('/', () => 'Hello World')
+	.get('/json', () => ({
+		hello: 'world'
+	}))
+	.listen(3000)

@@ -38,7 +38,9 @@ bot.on("messageCreate", async (message) => {
 bot.on("interactionCreate", async (interaction) => {
 	try {
 		if (interaction.isChatInputCommand()) {
-			return void chatInputCommands.find(c => c.data.name === interaction.commandName)?.execute(interaction).catch(console.error);
+			const command = chatInputCommands.find(c => c.data.name === interaction.commandName);
+			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
+			return void command.execute(interaction, command.data);
 		}
 
 	} catch (error) {

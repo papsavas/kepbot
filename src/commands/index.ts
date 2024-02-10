@@ -1,13 +1,13 @@
-import { ApplicationCommandType } from "discord.js";
-import type { Command } from "../../types";
-import { lockChannel } from "./lockChannel";
+import { ApplicationCommandType, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
+import type { BotCommand } from "~/lib/createCommand";
+import { responsesCommand } from "./responses";
 
-export const commands = [lockChannel]
+export const commands = [responsesCommand] as unknown as BotCommand[];
 
-export const { chatInputCommands, userCtxMenuCommands, messageCtxMenuCommands } = commands.reduce((acc, command: Command) => {
+export const { chatInputCommands, userCtxMenuCommands, messageCtxMenuCommands } = commands.reduce((acc, command) => {
   switch (command.type) {
     case ApplicationCommandType.ChatInput: {
-      acc.chatInputCommands.push(command)
+      acc.chatInputCommands.push(command as BotCommand<ChatInputCommandInteraction>)
       return acc;
     }
 
@@ -24,12 +24,9 @@ export const { chatInputCommands, userCtxMenuCommands, messageCtxMenuCommands } 
     default: return acc
   }
 
-}, { chatInputCommands: [], messageCtxMenuCommands: [], userCtxMenuCommands: [] } as Record<"chatInputCommands" | "userCtxMenuCommands" | "messageCtxMenuCommands", Command[]>)
+}, { chatInputCommands: [], messageCtxMenuCommands: [], userCtxMenuCommands: [] } as {
+  chatInputCommands: BotCommand<ChatInputCommandInteraction>[],
+  userCtxMenuCommands: BotCommand<UserContextMenuCommandInteraction>[],
+  messageCtxMenuCommands: BotCommand<MessageContextMenuCommandInteraction>[],
 
-// export function createCommand<T extends Interaction>(props: {
-//   name: string,
-//   data: ApplicationCommandData,
-//   execute: (interaction: T) => void
-// }) {
-
-// }
+})

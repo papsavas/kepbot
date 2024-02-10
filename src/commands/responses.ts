@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, type ChatInputCommandInteraction } from "discord.js";
+import { insertResponse } from "~/db/responses";
 import { createCommand } from "~/lib/createCommand";
 
 
@@ -13,8 +14,8 @@ export const responsesCommand = createCommand({
       description: "Adds a response",
       type: ApplicationCommandOptionType.Subcommand,
       options: [{
-        name: "name",
-        description: "Name of the response",
+        name: "response",
+        description: "Response text",
         type: ApplicationCommandOptionType.String,
         min_length: 1,
         required: true
@@ -49,7 +50,13 @@ export const responsesCommand = createCommand({
     const subcommand = interaction.options.getSubcommand() as typeof data['options'][number]['name'];
     switch (subcommand) {
       case 'add': {
-
+        const response = interaction.options.getString(data.options[0].options[0].name, true);
+        const userId = interaction.user.id;
+        const res = await insertResponse({ text: response, userId });
+        await interaction.reply({
+          ephemeral: true,
+          content: `Response added${JSON.stringify(res)}`
+        })
         break;
       }
 

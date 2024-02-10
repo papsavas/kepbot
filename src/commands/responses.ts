@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, Colors, inlineCode, type ChatInputCommandInteraction } from "discord.js";
-import { deleteResponse, getResponses, insertResponse } from "~/db/responses";
+import { deleteResponse, getUserResponses, insertResponse } from "~/db/responses";
 import { createCommand } from "~/lib/createCommand";
 
 
@@ -15,7 +15,7 @@ export const responsesCommand = createCommand({
       type: ApplicationCommandOptionType.Subcommand,
       options: [{
         name: "response",
-        description: "Response text",
+        description: "Response text (use * for wildcard)",
         type: ApplicationCommandOptionType.String,
         min_length: 1,
         required: true
@@ -24,7 +24,6 @@ export const responsesCommand = createCommand({
         name: "target",
         description: "Target user",
         type: ApplicationCommandOptionType.User,
-        required: false
       },
       {
         name: "trigger",
@@ -70,7 +69,7 @@ export const responsesCommand = createCommand({
       }
 
       case 'list': {
-        const responses = await getResponses({ userId: interaction.user.id });
+        const responses = await getUserResponses({ userId: interaction.user.id });
         await interaction.reply({
           ephemeral: true,
           embeds: [
@@ -94,10 +93,10 @@ export const responsesCommand = createCommand({
 
       case "remove": {
         const id = interaction.options.getInteger(data.options[1].options[0].name, true);
-        await deleteResponse({ id, userId: interaction.user.id });
+        const [{ affectedRows }, packets] = await deleteResponse({ id, userId: interaction.user.id });
         await interaction.reply({
           ephemeral: true,
-          content: `Removed response with id: ${id} 🗑️`
+          content: affectedRows > 0 ? `Removed response with id: ${id} 🗑️` : `Response with id:${id} not found`
         })
         break;
       }

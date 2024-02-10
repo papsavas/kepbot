@@ -1,7 +1,4 @@
 
-// export type Command<T extends ApplicationCommandData> = {
-//   type: ApplicationCommandType,
-//   data: T,
-//   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-//   execute: (interaction: any, data: T) => Promise<unknown>
-// }
+export type NonNullableFields<T> = {
+  [P in keyof T]: NonNullable<T[P]>;
+};

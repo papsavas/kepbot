@@ -10,6 +10,7 @@ const bot = new Client({
 		"GuildBans",
 		"GuildMessageReactions",
 		"GuildIntegrations",
+		"GuildMessages"
 	],
 	partials: [
 		Partials.Channel,
@@ -29,7 +30,8 @@ bot.once("ready", async (client) => {
 
 bot.on("messageCreate", async (message) => {
 	try {
-		validateRegisteredEmail(message)
+		validateRegisteredEmail(message);
+		respondToMessage(message);
 	} catch (error) {
 		console.error(error);
 	}
@@ -59,6 +61,7 @@ process.on('uncaughtException', (reason, p) => {
 });
 
 import { Elysia } from 'elysia';
+import { respondToMessage } from "./handlers/respondToMessage";
 import { validateRegisteredEmail } from "./handlers/validateRegisteredEmail";
 
 new Elysia()

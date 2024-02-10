@@ -3,6 +3,8 @@ export const discordIds = {
   channels: {
     logs: "712269234566332476",
     newMembers: "694935672321998898",
+    skynet: "697176138769760358",
+    blabla: "712293922872754196",
   },
   roles: {
     admin: "690268284192424108",

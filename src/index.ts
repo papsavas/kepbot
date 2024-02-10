@@ -28,7 +28,11 @@ bot.once("ready", async (client) => {
 });
 
 bot.on("messageCreate", async (message) => {
-	validateRegisteredEmail(message)
+	try {
+		validateRegisteredEmail(message)
+	} catch (error) {
+		console.error(error);
+	}
 })
 
 bot.on("interactionCreate", async (interaction) => {

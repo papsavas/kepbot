@@ -1,4 +1,4 @@
-import type { Message, TextChannel } from "discord.js";
+import { roleMention, type Message, type TextChannel } from "discord.js";
 import { discordIds } from "~/lib/discordIds";
 import { studentEmailRegex } from "~/lib/utils";
 
@@ -14,8 +14,11 @@ export async function validateRegisteredEmail(message: Message) {
     })
   };
   if (!studentEmailRegex.test(email)) {
-    const adminRole = message.guild.roles.cache.get(discordIds.roles.admin)!;
     //TODO: replace with banning
-    await message.reply({ content: adminRole.toString(), allowedMentions: { roles: [adminRole.id] } })
+    await message.reply({
+      content: roleMention(discordIds.roles.admin),
+
+      allowedMentions: { roles: [discordIds.roles.admin] }
+    })
   }
 }

@@ -23,7 +23,11 @@ export async function getResponsesFromMessage({ targetId, trigger }: NonNullable
 
 export async function getResponsesFromMention({ targetId }: NonNullableFields<Pick<Response, "targetId">>) {
   return db.query.responses.findMany({
-    where: or(isNull(responses.targetId), eq(responses.targetId, targetId))
+    where:
+      and(
+        or(isNull(responses.targetId), eq(responses.targetId, targetId)),
+        isNull(responses.trigger)
+      )
   })
 }
 

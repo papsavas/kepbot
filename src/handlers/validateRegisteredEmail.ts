@@ -20,6 +20,7 @@ export async function validateRegisteredEmail(message: Message) {
 
       allowedMentions: { roles: [discordIds.roles.admin] }
     })
+    await message.react("🥾")
   }
   else {
     await message.react("✅")

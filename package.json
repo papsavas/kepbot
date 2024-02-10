@@ -6,7 +6,8 @@
 		"start": "bun src/index.ts",
 		"registerCommands": "bun src/scripts/registerCommand.ts",
 		"clearCommands": "bun src/scripts/clearCommands.ts",
-		"migrate": "bun src/db/migrate.ts"
+		"db:generate": "bun drizzle-kit generate:mysql",
+		"db:migrate": "bun src/scripts/migrate.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",

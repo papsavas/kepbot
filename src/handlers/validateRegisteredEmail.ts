@@ -9,11 +9,13 @@ export async function validateRegisteredEmail(message: Message) {
   const email = message.content.split("→").at(-1)?.trim();
   if (!email) {
     const logs = (await message.guild.channels.fetch(discordIds.channels.logs)) as TextChannel;
-    return logs.send(`Could not resolve email from message: ${message.url}`)
+    return logs.send({
+      content: `## Could not resolve email from message: ${message.url}`,
+    })
   };
   if (!studentEmailRegex.test(email)) {
     const adminRole = message.guild.roles.cache.get(discordIds.roles.admin)!;
     //TODO: replace with banning
-    await message.reply(adminRole.toString())
+    await message.reply({ content: adminRole.toString(), allowedMentions: { roles: [adminRole.id] } })
   }
 }

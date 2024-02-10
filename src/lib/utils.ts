@@ -4,4 +4,4 @@ export const toLowerBase = (string: string) =>
     .replace(/\p{Diacritic}/gu, '')
     .toLocaleLowerCase('el');
 
-export const studentEmailRegex = /(dai((1[6-9][0-3][0-9][0-9])|(20[0-3][0-9][0-9]))|(it(0|1|9)[0-9][0-9][0-9]?[0-9]?)|(tm(1)[0-4][0-9][0-9]?)|(ics(2)[0-9][0-3][0-9][0-9])|iis(2)[0-9][0-3][0-9][0-9])@uom.edu.gr/
+export const studentEmailRegex = /(dai1[6-9][0-3]\d{2}|it\d{3,4}|tm1[0-4]\d\d?|(ics2\d[0-4]\d\d)|iis2\d[0-4]\d\d)@uom\.edu\.gr/

@@ -4,9 +4,9 @@ export default defineConfig({
   verbose: true,
   strict: true,
   driver: "mysql2",
-  schema: "./schema.ts",
-  out: "./drizzle",
+  schema: "./src/db/schema",
+  out: "./src/db/drizzle",
   dbCredentials: {
-    uri: Bun.env.DATABASE_URL as string
+    uri: process.env.DATABASE_URL as string
   }
 });

@@ -15,6 +15,13 @@
       "when": 1707590866380,
       "tag": "0001_young_justin_hammer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707592260176,
+      "tag": "0002_tranquil_supreme_intelligence",
+      "breakpoints": true
     }
   ]
 }

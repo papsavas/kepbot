@@ -4,6 +4,7 @@ export const responses = mysqlTable("responses", {
   id: serial("id").primaryKey(),
   text: text("text").notNull(),
   userId: varchar("userId", { length: 20 }).notNull(),
+  trigger: text("trigger"),
   targetId: varchar("targetId", { length: 20 })
 })
 

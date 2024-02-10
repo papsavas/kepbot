@@ -1,4 +1,4 @@
-import { roleMention, type Message, type TextChannel } from "discord.js";
+import { heading, roleMention, type Message, type TextChannel } from "discord.js";
 import { discordIds } from "~/lib/discordIds";
 import { studentEmailRegex } from "~/lib/utils";
 
@@ -10,7 +10,7 @@ export async function validateRegisteredEmail(message: Message) {
   if (!email) {
     const logs = (await message.guild.channels.fetch(discordIds.channels.logs)) as TextChannel;
     return logs.send({
-      content: `## Could not resolve email from message: ${message.url}`,
+      content: heading(`Could not resolve email from message: ${message.url}`, 2),
     })
   };
   if (!studentEmailRegex.test(email)) {

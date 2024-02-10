@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, type ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, Colors, inlineCode, type ChatInputCommandInteraction } from "discord.js";
 import { deleteResponse, getResponses, insertResponse } from "~/db/responses";
 import { createCommand } from "~/lib/createCommand";
 
@@ -25,7 +25,13 @@ export const responsesCommand = createCommand({
         description: "Target user",
         type: ApplicationCommandOptionType.User,
         required: false
-      }
+      },
+      {
+        name: "trigger",
+        description: "Trigger text",
+        type: ApplicationCommandOptionType.String,
+        min_length: 1,
+      },
       ]
     }, {
       name: "remove",
@@ -53,11 +59,12 @@ export const responsesCommand = createCommand({
       case 'add': {
         const response = interaction.options.getString(data.options[0].options[0].name, true);
         const target = interaction.options.getUser(data.options[0].options[1].name, false);
+        const trigger = interaction.options.getString(data.options[0].options[2].name, false);
         const userId = interaction.user.id;
-        await insertResponse({ text: response, userId, targetId: target?.id });
+        await insertResponse({ text: response, userId, targetId: target?.id, trigger });
         await interaction.reply({
           ephemeral: true,
-          content: `Response added ✅ ${response} ${target ? `for ${target.toString()}` : ''}`
+          content: `Added response ${inlineCode(response)}${target ? ` for ${target.toString()}` : ''}${trigger ? ` with trigger ${inlineCode(trigger)}` : ''} ✅`
         })
         break;
       }
@@ -70,9 +77,14 @@ export const responsesCommand = createCommand({
             {
               title: "Responses",
               description: "List of your responses",
-              fields: responses.map(({ id, text, targetId }) => ({
-                name: id.toString(),
-                value: `${text} ${targetId ? `for <@${targetId}>` : ''}`
+              color: Colors.Orange,
+              author: {
+                name: interaction.user.username,
+                icon_url: interaction.user.avatarURL() ?? undefined,
+              },
+              fields: responses.map(({ id, text, targetId, trigger }) => ({
+                name: `id: ${id}`,
+                value: `${inlineCode(text)}${targetId ? ` for <@${targetId}>` : ''}${trigger ? ` with trigger ${inlineCode(trigger)}` : ''}`
               }))
             }
           ]

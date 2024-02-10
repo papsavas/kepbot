@@ -3,7 +3,7 @@ import { db } from "~db";
 import { responses, type Response, type ResponseInsert } from "./schema/responses";
 
 export async function getResponses({ userId }: Pick<Response, "userId">) {
-  db.query.responses.findMany({
+  return db.query.responses.findMany({
     where: eq(responses.userId, userId)
   })
 }

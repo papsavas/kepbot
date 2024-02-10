@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, ApplicationCommandType, type ChatInputCommandInteraction } from "discord.js";
-import { insertResponse } from "~/db/responses";
+import { deleteResponse, getResponses, insertResponse } from "~/db/responses";
 import { createCommand } from "~/lib/createCommand";
 
 
@@ -19,6 +19,12 @@ export const responsesCommand = createCommand({
         type: ApplicationCommandOptionType.String,
         min_length: 1,
         required: true
+      },
+      {
+        name: "target",
+        description: "Target user",
+        type: ApplicationCommandOptionType.User,
+        required: false
       }
       ]
     }, {
@@ -28,7 +34,7 @@ export const responsesCommand = createCommand({
       options: [{
         name: "id",
         description: "Id of the response to remove",
-        type: ApplicationCommandOptionType.String,
+        type: ApplicationCommandOptionType.Integer,
         min_length: 1,
         required: true,
       }
@@ -39,11 +45,6 @@ export const responsesCommand = createCommand({
       description: "Lists all responses",
       type: ApplicationCommandOptionType.Subcommand,
     },
-    {
-      name: "clear",
-      description: "Clears all responses",
-      type: ApplicationCommandOptionType.Subcommand
-    }
     ],
   },
   execute: async (interaction: ChatInputCommandInteraction, data) => {
@@ -51,11 +52,40 @@ export const responsesCommand = createCommand({
     switch (subcommand) {
       case 'add': {
         const response = interaction.options.getString(data.options[0].options[0].name, true);
+        const target = interaction.options.getUser(data.options[0].options[1].name, false);
         const userId = interaction.user.id;
-        const res = await insertResponse({ text: response, userId });
+        await insertResponse({ text: response, userId, targetId: target?.id });
         await interaction.reply({
           ephemeral: true,
-          content: `Response added${JSON.stringify(res)}`
+          content: `Response added ✅ ${response} ${target ? `for ${target.toString()}` : ''}`
+        })
+        break;
+      }
+
+      case 'list': {
+        const responses = await getResponses({ userId: interaction.user.id });
+        await interaction.reply({
+          ephemeral: true,
+          embeds: [
+            {
+              title: "Responses",
+              description: "List of your responses",
+              fields: responses.map(({ id, text, targetId }) => ({
+                name: id.toString(),
+                value: `${text} ${targetId ? `for <@${targetId}>` : ''}`
+              }))
+            }
+          ]
+        })
+        break;
+      }
+
+      case "remove": {
+        const id = interaction.options.getInteger(data.options[1].options[0].name, true);
+        await deleteResponse({ id, userId: interaction.user.id });
+        await interaction.reply({
+          ephemeral: true,
+          content: `Removed response with id: ${id} 🗑️`
         })
         break;
       }

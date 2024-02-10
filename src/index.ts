@@ -27,6 +27,10 @@ bot.once("ready", async (client) => {
 	);
 });
 
+bot.on("messageCreate", async (message) => {
+	validateRegisteredEmail(message)
+})
+
 bot.on("interactionCreate", async (interaction) => {
 	try {
 		if (interaction.isChatInputCommand()) {
@@ -38,7 +42,6 @@ bot.on("interactionCreate", async (interaction) => {
 	}
 
 })
-
 bot.login(Bun.env.BOT_TOKEN).then(() => console.log("Logged In"));
 
 process.on('unhandledRejection', (reason, p) => {
@@ -50,6 +53,7 @@ process.on('uncaughtException', (reason, p) => {
 });
 
 import { Elysia } from 'elysia';
+import { validateRegisteredEmail } from "./handlers/validateRegisteredEmail";
 
 new Elysia()
 	.get('/', () => 'Hello World')

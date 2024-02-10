@@ -1,10 +1,6 @@
+import { mysqlTable, serial, text, varchar } from "drizzle-orm/mysql-core";
 
-// const UserSchema = mySqlTable
-
-import { serial, text, varchar } from "drizzle-orm/mysql-core";
-import { mySqlTable } from "~db";
-
-export const responses = mySqlTable("responses", {
+export const responses = mysqlTable("responses", {
   id: serial("id").primaryKey(),
   text: text("text").notNull(),
   userId: varchar("userId", { length: 20 }).notNull()

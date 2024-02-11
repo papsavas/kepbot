@@ -15,7 +15,7 @@ export const responsesCommand = createCommand({
       type: ApplicationCommandOptionType.Subcommand,
       options: [{
         name: "response",
-        description: "Response text (use * for wildcard)",
+        description: "Response text",
         type: ApplicationCommandOptionType.String,
         min_length: 1,
         max_length: 2000,

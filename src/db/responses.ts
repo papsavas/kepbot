@@ -16,7 +16,7 @@ export async function getResponsesFromMessage({ targetId, trigger }: NonNullable
         isNull(responses.targetId),
         eq(responses.targetId, targetId)
       ),
-      like(responses.trigger, trigger.replaceAll("*", "%"))
+      like(responses.trigger, trigger)
     )
   })
 }

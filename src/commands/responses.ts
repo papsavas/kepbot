@@ -80,6 +80,7 @@ export const responsesCommand = createCommand({
         }, [] as typeof responses[])
         await interaction.reply({
           ephemeral: true,
+          content: `Found ${responses.length} responses`,
           embeds: batchesOf20.map((batch, batchIndex) =>
           ({
             title: `Responses ${batchesOf20.length > 1 ? ` (${batchIndex + 1}/${batchesOf20.length})` : ''}`,

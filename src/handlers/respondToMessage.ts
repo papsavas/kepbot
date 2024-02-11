@@ -12,5 +12,5 @@ export async function respondToMessage(message: Message) {
       await getResponsesFromMessage({ targetId: author.id, trigger: content });
   if (savedResponses.length === 0) return
   const response = savedResponses[Math.floor(Math.random() * savedResponses.length)];
-  await message.channel.send(response.text);
+  await message.channel.send({ content: response.text, allowedMentions: { parse: [] } });
 }

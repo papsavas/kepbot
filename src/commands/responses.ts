@@ -18,6 +18,7 @@ export const responsesCommand = createCommand({
         description: "Response text (use * for wildcard)",
         type: ApplicationCommandOptionType.String,
         min_length: 1,
+        max_length: 2000,
         required: true
       },
       {
@@ -30,6 +31,7 @@ export const responsesCommand = createCommand({
         description: "Trigger text",
         type: ApplicationCommandOptionType.String,
         min_length: 1,
+        max_length: 2000,
       },
       ]
     }, {

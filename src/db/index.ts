@@ -7,5 +7,4 @@ const connection = await mysql.createConnection(Bun.env.DATABASE_URL as string);
 export const db = drizzle(connection, {
   schema: { ...responses },
   mode: "default",
-  logger: true
 });

@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, Colors, inlineCode, type ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, Colors, inlineCode, userMention, type ChatInputCommandInteraction } from "discord.js";
 import { deleteResponse, getUserResponses, insertResponse } from "~/db/responses";
 import { createCommand } from "~/lib/createCommand";
 
@@ -93,7 +93,7 @@ export const responsesCommand = createCommand({
               const truncatedText = text.length > 800 ? `${text.slice(0, 800)}...` : text;
               return {
                 name: `id: ${id}`,
-                value: `${inlineCode(truncatedText)}${targetId ? ` for <@${targetId}>` : ''}${trigger ? ` with trigger ${inlineCode(trigger)}` : ''}`
+                value: `${truncatedText}${targetId ? ` (target:${userMention(targetId)})` : ''}${trigger ? ` (trigger:${inlineCode(trigger)})` : ''}`
               }
             })
           })

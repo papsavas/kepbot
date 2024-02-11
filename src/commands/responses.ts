@@ -80,9 +80,9 @@ export const responsesCommand = createCommand({
         }, [] as typeof responses[])
         await interaction.reply({
           ephemeral: true,
-          embeds: batchesOf20.map(batch =>
+          embeds: batchesOf20.map((batch, batchIndex) =>
           ({
-            title: "Responses",
+            title: `Responses" ${batchesOf20.length > 1 ? ` (${batchIndex + 1}/${batchesOf20.length})` : ''}`,
             description: "List of your responses",
             color: Colors.Orange,
             author: {

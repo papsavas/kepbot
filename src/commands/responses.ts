@@ -72,23 +72,29 @@ export const responsesCommand = createCommand({
 
       case 'list': {
         const responses = await getUserResponses({ userId: interaction.user.id });
+        const batchesOf20 = responses.reduce((acc, curr, i) => {
+          const index = Math.floor(i / 20);
+          if (!acc[index]) acc[index] = [];
+          acc[index].push(curr);
+          return acc;
+        }, [] as typeof responses[])
         await interaction.reply({
           ephemeral: true,
-          embeds: [
-            {
-              title: "Responses",
-              description: "List of your responses",
-              color: Colors.Orange,
-              author: {
-                name: interaction.user.username,
-                icon_url: interaction.user.avatarURL() ?? undefined,
-              },
-              fields: responses.map(({ id, text, targetId, trigger }) => ({
-                name: `id: ${id}`,
-                value: `${inlineCode(text)}${targetId ? ` for <@${targetId}>` : ''}${trigger ? ` with trigger ${inlineCode(trigger)}` : ''}`
-              }))
-            }
-          ]
+          embeds: batchesOf20.map(batch =>
+          ({
+            title: "Responses",
+            description: "List of your responses",
+            color: Colors.Orange,
+            author: {
+              name: interaction.user.username,
+              icon_url: interaction.user.avatarURL() ?? undefined,
+            },
+            fields: batch.map(({ id, text, targetId, trigger }) => ({
+              name: `id: ${id}`,
+              value: `${inlineCode(text)}${targetId ? ` for <@${targetId}>` : ''}${trigger ? ` with trigger ${inlineCode(trigger)}` : ''}`
+            }))
+          })
+          )
         })
         break;
       }

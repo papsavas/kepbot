@@ -1,5 +1,5 @@
 import { Client, Partials } from "discord.js";
-import { chatInputCommands } from "./commands";
+import { chatInputCommands, messageCtxMenuCommands, userCtxMenuCommands } from "./commands";
 
 const bot = new Client({
 	intents: [
@@ -41,6 +41,18 @@ bot.on("interactionCreate", async (interaction) => {
 	try {
 		if (interaction.isChatInputCommand()) {
 			const command = chatInputCommands.find(c => c.data.name === interaction.commandName);
+			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
+			return void command.execute(interaction, command.data);
+		}
+
+		if (interaction.isMessageContextMenuCommand()) {
+			const command = messageCtxMenuCommands.find(c => c.data.name === interaction.commandName);
+			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
+			return void command.execute(interaction, command.data);
+		}
+
+		if (interaction.isUserContextMenuCommand()) {
+			const command = userCtxMenuCommands.find(c => c.data.name === interaction.commandName);
 			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
 			return void command.execute(interaction, command.data);
 		}

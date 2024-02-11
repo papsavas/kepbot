@@ -4,7 +4,6 @@ import { createCommand } from "~/lib/createCommand";
 
 
 export const responsesCommand = createCommand({
-  type: ApplicationCommandType.ChatInput,
   data: {
     name: "responses",
     description: "Manages responses of the bot",

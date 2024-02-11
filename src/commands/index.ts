@@ -1,11 +1,12 @@
 import { ApplicationCommandType, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import type { BotCommand } from "~/lib/createCommand";
+import { moveMessageCommand } from "./moveMessage";
 import { responsesCommand } from "./responses";
 
-export const commands = [responsesCommand] as unknown as BotCommand[];
+export const commands = [responsesCommand, moveMessageCommand] as unknown as BotCommand[];
 
 export const { chatInputCommands, userCtxMenuCommands, messageCtxMenuCommands } = commands.reduce((acc, command) => {
-  switch (command.type) {
+  switch (command.data.type) {
     case ApplicationCommandType.ChatInput: {
       acc.chatInputCommands.push(command as BotCommand<ChatInputCommandInteraction>)
       return acc;

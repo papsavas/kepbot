@@ -1,7 +1,6 @@
-import type { ApplicationCommandData, ApplicationCommandType, CommandInteraction } from "discord.js";
+import type { ApplicationCommandData, CommandInteraction } from "discord.js";
 
 export type BotCommand<TInteraction extends CommandInteraction = CommandInteraction, TData extends ApplicationCommandData = ApplicationCommandData> = {
-  type: ApplicationCommandType,
   data: TData,
   execute: (interaction: TInteraction, data: TData) => Promise<unknown>
 }

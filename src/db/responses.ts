@@ -1,4 +1,4 @@
-import { and, eq, isNull, like, or } from "drizzle-orm";
+import { and, eq, isNull, or, sql } from "drizzle-orm";
 import type { NonNullableFields } from "~/types";
 import { db } from "~db";
 import { responses, type Response, type ResponseInsert } from "./schema/responses";
@@ -16,7 +16,7 @@ export async function getResponsesFromMessage({ targetId, trigger }: NonNullable
         isNull(responses.targetId),
         eq(responses.targetId, targetId)
       ),
-      like(responses.trigger, trigger)
+      sql`LOWER(${responses.trigger}) LIKE LOWER(${trigger})`
     )
   })
 }

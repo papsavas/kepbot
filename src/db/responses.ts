@@ -16,7 +16,7 @@ export async function getResponsesFromMessage({ targetId, trigger }: NonNullable
         isNull(responses.targetId),
         eq(responses.targetId, targetId)
       ),
-      sql`LOWER(${responses.trigger}) LIKE LOWER(${trigger})`
+      sql`${responses.trigger} LIKE ${trigger} COLLATE utf8mb4_general_ci`
     )
   })
 }

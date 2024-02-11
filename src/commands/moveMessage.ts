@@ -46,7 +46,7 @@ export const moveMessageCommand = createCommand({
       // const avatarURL = message.author.avatarURL({ forceStatic: true, extension: "webp" }) ?? undefined;
       // console.log({ avatarURL })
       const sentMsg = await webhookClient.send({
-        username: message.author.username,
+        username: `${message.author.username} (moved by ${interaction.user.username})`,
         content: `${italic(message.url)}${message.content ? `\n${message.content}` : ""}`,
         embeds: message.embeds,
         components: message.components,

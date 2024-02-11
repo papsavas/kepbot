@@ -25,8 +25,11 @@ export async function getResponsesFromMention({ targetId }: NonNullableFields<Pi
   return db.query.responses.findMany({
     where:
       and(
-        or(isNull(responses.targetId), eq(responses.targetId, targetId)),
-        isNull(responses.trigger)
+        isNull(responses.trigger),
+        or(
+          isNull(responses.targetId),
+          eq(responses.targetId, targetId)
+        ),
       )
   })
 }

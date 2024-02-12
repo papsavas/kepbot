@@ -72,7 +72,7 @@ export const responsesCommand = createCommand({
       case 'list': {
         const responses = await getUserResponses({ userId: interaction.user.id });
         const batches = responses.reduce((acc, curr, i) => {
-          const index = Math.floor(i / 15);
+          const index = Math.floor(i / 10);
           if (!acc[index]) acc[index] = [];
           acc[index].push(curr);
           return acc;

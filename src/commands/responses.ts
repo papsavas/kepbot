@@ -90,10 +90,10 @@ export const responsesCommand = createCommand({
               icon_url: interaction.user.avatarURL() ?? undefined,
             },
             fields: batch.map(({ id, text, targetId, trigger }) => {
-              const truncatedText = text.length > 500 ? `${text.slice(0, 800)}...` : text;
+              const truncatedText = text.length > 500 ? `${text.slice(0, 500)}...` : text;
               return {
                 name: `id: ${id}`,
-                value: `${truncatedText}${targetId ? ` (target:${userMention(targetId)})` : ''}${trigger ? ` (trigger:${inlineCode(trigger).slice(0, 800)})` : ''}`
+                value: `${truncatedText}${targetId ? ` (target:${userMention(targetId)})` : ''}${trigger ? ` (trigger:${inlineCode(trigger).slice(0, 500)})` : ''}`
               }
             })
           })

@@ -71,8 +71,8 @@ export const responsesCommand = createCommand({
 
       case 'list': {
         const responses = await getUserResponses({ userId: interaction.user.id });
-        const batchesOf20 = responses.reduce((acc, curr, i) => {
-          const index = Math.floor(i / 20);
+        const batches = responses.reduce((acc, curr, i) => {
+          const index = Math.floor(i / 15);
           if (!acc[index]) acc[index] = [];
           acc[index].push(curr);
           return acc;
@@ -80,9 +80,9 @@ export const responsesCommand = createCommand({
         await interaction.reply({
           ephemeral: true,
           content: `Found ${responses.length} responses`,
-          embeds: batchesOf20.map((batch, batchIndex) =>
+          embeds: batches.slice(0, 9).map((batch, batchIndex) =>
           ({
-            title: `Responses ${batchesOf20.length > 1 ? ` (${batchIndex + 1}/${batchesOf20.length})` : ''}`,
+            title: `Responses ${batches.length > 1 ? ` (${batchIndex + 1}/${batches.length})` : ''}`,
             description: "List of your responses",
             color: Colors.Orange,
             author: {

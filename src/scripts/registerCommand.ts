@@ -8,25 +8,24 @@ const { values, positionals } = parseArgs({
     guildId: {
       type: 'string',
     },
-    commandNames: {
+    commandName: {
       type: 'string',
-      multiple: true,
     },
   },
   strict: true,
   allowPositionals: true,
 });
 
-const { guildId, commandNames } = values;
+const { guildId, commandName } = values;
 
-const commandsToRegister = commands.filter(c => commandNames?.includes(c.data.name));
-if (!guildId || !commandNames) throw "guildId and commandNames are required\n Usage: bun registerCommands --guildId=<guildId> --commandNames=<commandName1>,<commandName2>";
-if (commandsToRegister.length === 0) throw `Commands ${commandNames.toString()} not found\n Available commands: ${commands.map(c => c.data.name).join(', ')}`;
+const commandToRegister = commands.find(c => commandName?.includes(c.data.name));
+if (!guildId || !commandName) throw "guildId and commandName are required\n Usage: bun registerCommands --guildId=<guildId> --commandName=<commandName>";
+if (!commandToRegister) throw `Command ${commandName.toString()} not found\n Available commands: ${commands.map(c => c.data.name).join(', ')}`;
 
 const rest = new REST().setToken(Bun.env.BOT_TOKEN as string);
-const data = await rest.put(
+const data = await rest.post(
   Routes.applicationGuildCommands(Bun.env.CLIENT_ID as string, guildId),
-  { body: commandsToRegister.map(c => c.data) }
+  { body: commandToRegister.data }
 )
-console.log(`Successfully registered command ${commandNames.toString()} in guild ${guildId}`)
+console.log(`Successfully registered command ${commandName.toString()} in guild ${guildId}`)
 console.log(data)

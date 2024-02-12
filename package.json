@@ -4,7 +4,8 @@
 	"type": "module",
 	"scripts": {
 		"start": "bun src/index.ts",
-		"registerCommands": "bun src/scripts/registerCommand.ts",
+		"registerCommand": "bun src/scripts/registerCommand.ts",
+		"deleteCommand": "bun src/scripts/deleteCommand.ts",
 		"clearCommands": "bun src/scripts/clearCommands.ts",
 		"db:generate": "bun drizzle-kit generate:mysql",
 		"db:migrate": "bun src/scripts/migrate.ts"

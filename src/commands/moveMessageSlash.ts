@@ -7,6 +7,7 @@ export const moveMessageSlashCommand = createCommand({
     name: "move-message-slash",
     description: "Moves a message to another channel",
     type: ApplicationCommandType.ChatInput,
+    defaultMemberPermissions: ["ManageMessages", "ManageChannels"],
     options: [
       {
         name: "message-url",

@@ -1,4 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, WebhookClient, type Guild, type GuildChannel, type Message, type User } from "discord.js";
+import { discordIds } from "~/lib/discordIds";
 
 type Props = {
   targetChannelId: GuildChannel['id']
@@ -8,6 +9,8 @@ type Props = {
 }
 
 export async function sendWebhookMessage({ message, channelManager, targetChannelId, user }: Props) {
+  const { announcements, readme, rules, neaEnimerwseis, themata, lyseis, } = discordIds.channels
+  if (([announcements, readme, rules, neaEnimerwseis, themata, lyseis] as string[]).includes(targetChannelId)) throw `MoveMessage: Target Channel ${targetChannelId} is not allowed`
   const targetChannel = await channelManager.fetch(
     targetChannelId
   )!;

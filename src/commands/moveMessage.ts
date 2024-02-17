@@ -47,7 +47,7 @@ export const moveMessageCommand = createCommand({
       // console.log({ avatarURL })
       const sentMsg = await webhookClient.send({
         username: `${message.author.username} (moved by ${interaction.user.username})`,
-        content: `${hideLinkEmbed(italic(message.url))}>${message.content ? `\n${message.content}` : ""}`,
+        content: `${hideLinkEmbed(italic(message.url))}${message.content ? `\n${message.content}` : ""}`,
         embeds: message.embeds,
         components: message.components,
         files: message.attachments

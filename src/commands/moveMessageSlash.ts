@@ -28,26 +28,25 @@ export const moveMessageSlashCommand = createCommand({
     const targetChannelId = interaction.options.getString(data.options[1].name, true);
     const [guildId, channelId, messageId] = messageUrl.split('/').slice(-3)
     try {
+      await interaction.deferReply({ ephemeral: true })
       const messageChannel = (await interaction.guild!.channels.fetch(channelId)) as TextChannel;
       const message = await messageChannel.messages.fetch(messageId);
 
-      const sentMsg = await sendWebhookMessage({
+      const { sentMessage, targetChannel } = await sendWebhookMessage({
         channelManager: interaction.guild!.channels,
         message,
         targetChannelId,
         user: interaction.user,
       })
-      await interaction.reply({
-        ephemeral: true,
-        content: `Message moved to https://discord.com/channels/${interaction.guild!.id}/${sentMsg.channel_id}/${sentMsg.id}`
+      await interaction.editReply({
+        content: `Message moved to https://discord.com/channels/${interaction.guild!.id}/${sentMessage.channel_id}/${sentMessage.id}`
       })
     }
     catch (err) {
       console.error(err)
       console.log({ guildId, channelId, messageId })
-      await interaction.reply({
-        ephemeral: true,
-        content: `Something went wrong. Ensure you've provided the correct message ${bold('URL')} and channel ${bold('Id')}`
+      await interaction.editReply({
+        content: `Something went wrong. Ensure you've provided the correct message ${bold('URL')} and channel ${bold('Id')}\n${err}`
       })
     }
   }

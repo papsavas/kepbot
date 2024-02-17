@@ -34,7 +34,7 @@ export const moveMessageCtxCommand = createCommand({
     const targetChannelId = collectedSelect.values[0];
 
     try {
-      const sentMsg = await sendWebhookMessage({
+      const { sentMessage } = await sendWebhookMessage({
         channelManager: interaction.guild.channels,
         message,
         targetChannelId,
@@ -42,7 +42,7 @@ export const moveMessageCtxCommand = createCommand({
       })
 
       await collectedSelect.editReply({
-        content: `Message moved to https://discord.com/channels/${interaction.guild.id}/${sentMsg.channel_id}/${sentMsg.id}`,
+        content: `Message moved to https://discord.com/channels/${interaction.guild.id}/${sentMessage.channel_id}/${sentMessage.id}`,
       });
 
     } catch (err) {

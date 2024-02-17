@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ApplicationCommandType, ChannelSelectMenuBuilder, ChannelType, ComponentType, DiscordAPIError, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, TextChannel, WebhookClient, hideLinkEmbed } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandType, ChannelSelectMenuBuilder, ChannelType, ComponentType, DiscordAPIError, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, TextChannel, WebhookClient, hideLinkEmbed, hyperlink } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
 
 export const moveMessageCommand = createCommand({
@@ -46,8 +46,8 @@ export const moveMessageCommand = createCommand({
       // const avatarURL = message.author.avatarURL({ forceStatic: true, extension: "webp" }) ?? undefined;
       // console.log({ avatarURL })
       const sentMsg = await webhookClient.send({
-        username: `${message.author.username} (moved by ${interaction.user.username})`,
-        content: `${hideLinkEmbed(message.url)}${message.content ? `\n${message.content}` : ""}`,
+        username: `${message.author.username} (by ${interaction.user.username})`,
+        content: `${hideLinkEmbed(hyperlink("source", message.url))}${message.content ? `\n${message.content}` : ""}`,
         embeds: message.embeds,
         components: message.components,
         files: message.attachments

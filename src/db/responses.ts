@@ -22,14 +22,13 @@ export async function getUserResponses({ userId, query }: Pick<Response, "userId
 }
 
 export async function getResponsesFromMessage({ targetId, trigger }: NonNullableFields<Pick<Response, "targetId" | "trigger">>) {
-  const [leading, inner, trailing, exact] = [`% ${trigger}`, `% ${trigger} %`, `${trigger} %`, trigger]
   return db.query.responses.findMany({
     where: and(
       or(
         isNull(responses.targetId),
         eq(responses.targetId, targetId)
       ),
-      sql`${responses.trigger} LIKE ${leading} OR ${responses.trigger} LIKE ${inner} OR ${responses.trigger} LIKE ${trailing} OR ${responses.trigger} LIKE ${exact} COLLATE utf8mb4_general_ci`
+      sql`${responses.trigger} LIKE ${trigger} COLLATE utf8mb4_general_ci`
     )
   })
 }

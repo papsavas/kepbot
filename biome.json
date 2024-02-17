@@ -8,7 +8,7 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": { "noExplicitAny": "warn", "noDoubleEquals": "warn" },
-			"style": { "noNonNullAssertion": "off" }
+			"style": { "noNonNullAssertion": "off", "noUnusedTemplateLiteral": "off" }
 		}
 	},
 	"formatter": {

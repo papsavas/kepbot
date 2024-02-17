@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ApplicationCommandType, ChannelSelectMenuBuilder, ChannelType, ComponentType, DiscordAPIError, MessageContextMenuCommandInteraction, RESTJSONErrorCodes } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandType, DiscordAPIError, MessageContextMenuCommandInteraction, ModalBuilder, RESTJSONErrorCodes, TextInputBuilder, TextInputStyle } from "discord.js";
 import { sendWebhookMessage } from "~/handlers/sendWebhookMessage";
 import { createCommand } from "~/lib/createCommand";
 
@@ -13,25 +13,33 @@ export const moveMessageCtxCommand = createCommand({
     const message = interaction.targetMessage;
     const guildChannels = interaction.guild.channels;
     if (!guildChannels) return;
-    const select = new ChannelSelectMenuBuilder({
-      customId: 'move_msg_channel_select',
-      channelTypes: [ChannelType.GuildText, ChannelType.PublicThread],
-      placeholder: 'Select channel to send',
-    });
-    const res = await interaction.reply({
-      ephemeral: true,
-      components: [
-        new ActionRowBuilder<ChannelSelectMenuBuilder>().setComponents(select),
-      ],
+
+    const channelIdField = `target_channel_id`
+
+    const modal = new ModalBuilder({
+      title: `Move Message ${message.id}`,
+      custom_id: `move_message-${message.id}-by-${interaction.user.id}`,
+    })
+    const channelInput = new TextInputBuilder()
+      .setStyle(TextInputStyle.Short)
+      .setCustomId(channelIdField)
+      .setPlaceholder('Channel or Thread Id')
+      .setLabel('Channel Id')
+      .setRequired(true);
+
+    const ar = new ActionRowBuilder<TextInputBuilder>().addComponents(channelInput);
+
+    modal.addComponents(ar);
+
+    await interaction.showModal(modal);
+
+    const modalSubmitInteraction = await interaction.awaitModalSubmit({
+      time: 30000,
     });
 
-    const collectedSelect = await res.awaitMessageComponent({
-      componentType: ComponentType.ChannelSelect,
-    });
+    await modalSubmitInteraction.deferReply({ ephemeral: true });
 
-    await collectedSelect.deferReply({ ephemeral: true });
-
-    const targetChannelId = collectedSelect.values[0];
+    const targetChannelId = modalSubmitInteraction.fields.getTextInputValue(channelIdField);
 
     try {
       const { sentMessage } = await sendWebhookMessage({
@@ -41,16 +49,17 @@ export const moveMessageCtxCommand = createCommand({
         user: interaction.user,
       })
 
-      await collectedSelect.editReply({
+      await modalSubmitInteraction.editReply({
         content: `Message moved to https://discord.com/channels/${interaction.guild.id}/${sentMessage.channel_id}/${sentMessage.id}`,
       });
 
     } catch (err) {
+      await modalSubmitInteraction.editReply({ content: err!.toString() })
       if (
         // biome-ignore lint/suspicious/noDoubleEquals: idk it weird
         (err as DiscordAPIError).code == RESTJSONErrorCodes.MissingPermissions
       )
-        await collectedSelect.editReply({
+        await modalSubmitInteraction.editReply({
           content: 'I am missing permissions',
         });
     }

@@ -14,8 +14,8 @@ export const moveMessageCommand = createCommand({
     if (!guildChannels) return;
     const select = new ChannelSelectMenuBuilder({
       customId: 'move_msg_channel_select',
-      channelTypes: [ChannelType.GuildText],
-      placeholder: 'Select a channel',
+      channelTypes: [ChannelType.GuildText, ChannelType.PublicThread],
+      placeholder: 'Select channel to send',
     });
     const res = await interaction.reply({
       ephemeral: true,

@@ -6,7 +6,9 @@ export async function respondToMessage(message: Message) {
   const { content, guildId, author, channelId } = message
   if (guildId !== discordIds.kepGuildId) return
   if (author.bot) return
-  if (channelId !== discordIds.channels.blabla && channelId !== discordIds.channels.skynet) return
+  const { channels } = discordIds
+  const { blabla, skynet, botCommands, } = channels
+  if (!([blabla, skynet, botCommands] as string[]).includes(channelId)) return
   const savedResponses =
     message.mentions.has(Bun.env.CLIENT_ID as string) ? await getResponsesFromMention({ targetId: author.id }) :
       await getResponsesFromMessage({ targetId: author.id, trigger: content });

@@ -3,10 +3,22 @@ import type { NonNullableFields } from "~/types";
 import { db } from "~db";
 import { responses, type Response, type ResponseInsert } from "./schema/responses";
 
-export async function getUserResponses({ userId }: Pick<Response, "userId">) {
+export async function getUserResponses({ userId, query }: Pick<Response, "userId"> & { query?: string }) {
+  if (!query)
+    return db.query.responses.findMany({
+      where:
+        eq(responses.userId, userId),
+    });
+
+  const q = `%${query}%`
   return db.query.responses.findMany({
-    where: eq(responses.userId, userId)
-  })
+    where:
+      and(
+        eq(responses.userId, userId),
+        sql`${responses.text} LIKE ${q} COLLATE utf8mb4_general_ci`
+
+      )
+  });
 }
 
 export async function getResponsesFromMessage({ targetId, trigger }: NonNullableFields<Pick<Response, "targetId" | "trigger">>) {

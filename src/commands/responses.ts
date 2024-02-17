@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, ApplicationCommandType, Colors, inlineCode, userMention, type ChatInputCommandInteraction } from "discord.js";
+import { ApplicationCommandOptionType, ApplicationCommandType, inlineCode, type ChatInputCommandInteraction } from "discord.js";
 import { deleteResponse, getUserResponses, insertResponse } from "~/db/responses";
 import { createCommand } from "~/lib/createCommand";
 
@@ -8,51 +8,70 @@ export const responsesCommand = createCommand({
     name: "responses",
     description: "Manages responses of the bot",
     type: ApplicationCommandType.ChatInput,
-    options: [{
-      name: "add",
-      description: "Adds a response",
-      type: ApplicationCommandOptionType.Subcommand,
-      options: [{
-        name: "response",
-        description: "Response text",
-        type: ApplicationCommandOptionType.String,
-        min_length: 1,
-        max_length: 2000,
-        required: true
+    options: [
+      {
+        name: "add",
+        description: "Adds a response",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [{
+          name: "response",
+          description: "Response text",
+          type: ApplicationCommandOptionType.String,
+          min_length: 1,
+          max_length: 2000,
+          required: true
+        },
+        {
+          name: "target",
+          description: "Target user",
+          type: ApplicationCommandOptionType.User,
+        },
+        {
+          name: "trigger",
+          description: "Trigger text",
+          type: ApplicationCommandOptionType.String,
+          min_length: 1,
+          max_length: 2000,
+        },
+        ]
+      }, {
+        name: "remove",
+        description: "Removes a response",
+        type: ApplicationCommandOptionType.Subcommand,
+        options: [{
+          name: "id",
+          description: "Id of the response to remove",
+          type: ApplicationCommandOptionType.Integer,
+          min_length: 1,
+          required: true,
+        }
+        ]
       },
       {
-        name: "target",
-        description: "Target user",
-        type: ApplicationCommandOptionType.User,
+        name: "list",
+        description: "Lists all responses",
+        type: ApplicationCommandOptionType.Subcommand,
       },
-      {
-        name: "trigger",
-        description: "Trigger text",
-        type: ApplicationCommandOptionType.String,
-        min_length: 1,
-        max_length: 2000,
-      },
-      ]
-    }, {
-      name: "remove",
-      description: "Removes a response",
-      type: ApplicationCommandOptionType.Subcommand,
-      options: [{
-        name: "id",
-        description: "Id of the response to remove",
-        type: ApplicationCommandOptionType.Integer,
-        min_length: 1,
-        required: true,
-      }
-      ]
-    },
-    {
-      name: "list",
-      description: "Lists all responses",
-      type: ApplicationCommandOptionType.Subcommand,
-    },
     ],
   },
+  // autocomplete: async (interaction, data) => {
+  //   const subcommand = interaction.options.getSubcommand() as typeof data['options'][number]['name'];
+  //   switch (subcommand) {
+  //     case "remove": {
+  //       console.log(interaction.options.data[0].options)
+  //       // const query = interaction.options.getString(data.options[1].options[0].name, true);
+  //       // const responses = await getUserResponses({ userId: interaction.user.id, query });
+  //       // const getUsername = (id: string) => interaction.guild?.members.cache.get(id)?.user.username ?? id;
+  //       // const options = responses.slice(0, 20).map(({ id, text, trigger, targetId }) =>
+  //       // ({
+  //       //   name:
+  //       //     `${text.slice(0, 50)}${trigger ? ` (trigger:${inlineCode(trigger.slice(0, 10))})` : ""}${targetId ? ` (target:${inlineCode(getUsername(targetId))})` : ""}`,
+  //       //   value: id
+  //       // }));
+  //       await interaction.respond([])
+  //     }
+  //   }
+  // },
   execute: async (interaction: ChatInputCommandInteraction, data) => {
     const subcommand = interaction.options.getSubcommand() as typeof data['options'][number]['name'];
     switch (subcommand) {
@@ -77,28 +96,13 @@ export const responsesCommand = createCommand({
           acc[index].push(curr);
           return acc;
         }, [] as typeof responses[])
+        const txtFile = responses.map(({ id, text, trigger, targetId }) => `${id} - ${text}${trigger ? ` (trigger:${trigger})` : ""}${targetId ? ` (target:${targetId})` : ""}`).join("\n");
+        const files = responses.length > 0 ? [{ name: "responses.txt", attachment: Buffer.from(txtFile) }] : undefined;
         await interaction.reply({
           ephemeral: true,
           content: `Found ${responses.length} responses`,
-          embeds: batches.slice(0, 9).map((batch, batchIndex) =>
-          ({
-            title: `Responses ${batches.length > 1 ? ` (${batchIndex + 1}/${batches.length})` : ''}`,
-            description: "List of your responses",
-            color: Colors.Orange,
-            author: {
-              name: interaction.user.username,
-              icon_url: interaction.user.avatarURL() ?? undefined,
-            },
-            fields: batch.map(({ id, text, targetId, trigger }) => {
-              const truncatedText = text.length > 500 ? `${text.slice(0, 500)}...` : text;
-              return {
-                name: `id: ${id}`,
-                value: `${truncatedText}${targetId ? ` (target:${userMention(targetId)})` : ''}${trigger ? ` (trigger:${inlineCode(trigger).slice(0, 500)})` : ''}`
-              }
-            })
-          })
-          )
-        })
+          files
+        });
         break;
       }
 

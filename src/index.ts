@@ -1,5 +1,5 @@
 import { Client, Partials } from "discord.js";
-import { chatInputCommands, messageCtxMenuCommands, userCtxMenuCommands } from "./commands";
+import { chatInputCommands, commands, messageCtxMenuCommands, userCtxMenuCommands } from "./commands";
 
 const bot = new Client({
 	intents: [
@@ -55,6 +55,13 @@ bot.on("interactionCreate", async (interaction) => {
 			const command = userCtxMenuCommands.find(c => c.data.name === interaction.commandName);
 			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
 			return void command.execute(interaction, command.data);
+		}
+
+		if (interaction.isAutocomplete()) {
+			const command = commands.find(c => c.data.name === interaction.commandName);
+			if (!command) return console.error(`autocomplete ${interaction.commandName} not handled`)
+			return void command.autocomplete?.(interaction, command.data);
+
 		}
 
 	} catch (error) {

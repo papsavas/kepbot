@@ -1,9 +1,10 @@
 import { ApplicationCommandType, ChatInputCommandInteraction, MessageContextMenuCommandInteraction, UserContextMenuCommandInteraction } from "discord.js";
 import type { BotCommand } from "~/lib/createCommand";
-import { moveMessageCommand } from "./moveMessage";
+import { moveMessageCtxCommand } from "./moveMessageCtx";
+import { moveMessageSlashCommand } from "./moveMessageSlash";
 import { responsesCommand } from "./responses";
 
-export const commands = [responsesCommand, moveMessageCommand] as unknown as BotCommand[];
+export const commands = [responsesCommand, moveMessageCtxCommand, moveMessageSlashCommand] as unknown as BotCommand[];
 
 export const { chatInputCommands, userCtxMenuCommands, messageCtxMenuCommands } = commands.reduce((acc, command) => {
   switch (command.data.type) {

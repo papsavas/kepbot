@@ -1,9 +1,10 @@
-import { ActionRowBuilder, ApplicationCommandType, ButtonBuilder, ButtonStyle, ChannelSelectMenuBuilder, ChannelType, ComponentType, DiscordAPIError, MessageContextMenuCommandInteraction, RESTJSONErrorCodes, TextChannel, WebhookClient } from "discord.js";
+import { ActionRowBuilder, ApplicationCommandType, ChannelSelectMenuBuilder, ChannelType, ComponentType, DiscordAPIError, MessageContextMenuCommandInteraction, RESTJSONErrorCodes } from "discord.js";
+import { sendWebhookMessage } from "~/handlers/sendWebhookMessage";
 import { createCommand } from "~/lib/createCommand";
 
-export const moveMessageCommand = createCommand({
+export const moveMessageCtxCommand = createCommand({
   data: {
-    name: "move-message",
+    name: "move-message-ctx",
     type: ApplicationCommandType.Message,
     defaultMemberPermissions: ["ManageMessages", "ManageChannels"],
   },
@@ -31,39 +32,19 @@ export const moveMessageCommand = createCommand({
     await collectedSelect.deferReply({ ephemeral: true });
 
     const targetChannelId = collectedSelect.values[0];
-    const targetChannel = interaction.guild.channels.cache.get(
-      targetChannelId
-    ) as TextChannel;
-    const webhook = await targetChannel.createWebhook({
-      name: `move-message-${message.author.tag}-${message.id}`,
-      reason: `Move Message for ${message.author.tag}`,
-      avatar: message.author.avatarURL() ?? message.author.displayAvatarURL(),
-    });
-
-    const webhookClient = new WebhookClient({ url: webhook.url });
 
     try {
-      const sourceButton = new ButtonBuilder()
-        .setStyle(ButtonStyle.Link)
-        .setURL(message.url)
-        .setLabel('Original Message');
-      const row = new ActionRowBuilder<ButtonBuilder>().addComponents(sourceButton);
-      const sentMsg = await webhookClient.send({
-        username: `${message.author.username} (by ${interaction.user.username})`,
-        content: message.content,
-        embeds: message.embeds,
-        components: [...message.components, row],
-        files: message.attachments
-          .map((a) =>
-            a.url
-          ),
-      });
+      const sentMsg = await sendWebhookMessage({
+        channelManager: interaction.guild.channels,
+        message,
+        targetChannelId,
+        user: interaction.user,
+      })
 
       await collectedSelect.editReply({
         content: `Message moved to https://discord.com/channels/${interaction.guild.id}/${sentMsg.channel_id}/${sentMsg.id}`,
       });
 
-      await webhook.delete();
     } catch (err) {
       if (
         // biome-ignore lint/suspicious/noDoubleEquals: idk it weird

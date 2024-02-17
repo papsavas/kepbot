@@ -15,7 +15,7 @@ export async function sendWebhookMessage({ message, channelManager, targetChanne
   console.log("fetched targetChannel");
   const webhookChannel = (targetChannel.isThread() ? targetChannel.parent! : targetChannel);
 
-  if (!(webhookChannel.isTextBased() || webhookChannel.isThreadOnly() || webhookChannel.isThread())) throw `MoveMessage: Target Channel ${targetChannel} is not a text channel or thread`
+  if (!(webhookChannel.isTextBased() || webhookChannel.isThreadOnly() || webhookChannel.isThread())) throw `MoveMessage: Target Channel ${targetChannel} is not text, thread or post`
   const webhook = await webhookChannel
     .createWebhook({
       name: `move-message-${message.author.tag}-${message.id}`,

@@ -96,7 +96,10 @@ export const responsesCommand = createCommand({
           acc[index].push(curr);
           return acc;
         }, [] as typeof responses[])
-        const txtFile = responses.map(({ id, text, trigger, targetId }) => `${id} - ${text}${trigger ? ` (trigger:${trigger})` : ""}${targetId ? ` (target:${targetId})` : ""}`).join("\n");
+        const txtFile = responses.map(({ id, text, trigger, targetId }) => {
+          const target = targetId ? interaction.guild?.members.cache.get(targetId)?.user.username ?? targetId : undefined;
+          return `${id} - ${text}${trigger ? ` (trigger:${trigger})` : ""}${target ? ` (target:${target})` : ""}`
+        }).join("\n");
         const files = responses.length > 0 ? [{ name: "responses.txt", attachment: Buffer.from(txtFile) }] : undefined;
         await interaction.reply({
           ephemeral: true,

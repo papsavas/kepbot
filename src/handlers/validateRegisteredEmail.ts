@@ -3,7 +3,7 @@ import { discordIds } from "~/lib/discordIds";
 import { studentEmailRegex } from "~/lib/utils";
 
 export async function validateRegisteredEmail(message: Message) {
-  if (!message.guild || message.guildId !== discordIds.kepGuildId) return
+  if (!message.guild) return
   if (message.channelId !== discordIds.channels.newMembers) return
   if (message.author.id !== discordIds.members.emailBot) return
   const email = message.content.split("→").at(-1)?.trim();

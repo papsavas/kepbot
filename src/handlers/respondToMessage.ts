@@ -4,7 +4,6 @@ import { discordIds } from "~/lib/discordIds";
 
 export async function respondToMessage(message: Message) {
   const { content, guildId, author, channelId } = message
-  if (guildId !== discordIds.kepGuildId) return
   if (author.bot) return
   const { channels } = discordIds
   const { blabla, skynet, botCommands, } = channels

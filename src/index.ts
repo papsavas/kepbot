@@ -30,6 +30,8 @@ bot.once("ready", async (client) => {
 
 bot.on("messageCreate", async (message) => {
 	try {
+		if (message.guildId !== discordIds.kepGuildId) return
+
 		validateRegisteredEmail(message);
 		respondToMessage(message);
 	} catch (error) {
@@ -38,6 +40,8 @@ bot.on("messageCreate", async (message) => {
 })
 
 bot.on("interactionCreate", async (interaction) => {
+	if (interaction.guildId !== discordIds.kepGuildId) return
+
 	try {
 		if (interaction.isChatInputCommand()) {
 			const command = chatInputCommands.find(c => c.data.name === interaction.commandName);
@@ -82,6 +86,7 @@ process.on('uncaughtException', (reason, p) => {
 import { Elysia } from 'elysia';
 import { respondToMessage } from "./handlers/respondToMessage";
 import { validateRegisteredEmail } from "./handlers/validateRegisteredEmail";
+import { discordIds } from "./lib/discordIds";
 
 new Elysia()
 	.get('/', () => 'Hello World')

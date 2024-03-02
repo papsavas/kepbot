@@ -9,8 +9,8 @@ type Props = {
 }
 
 export async function sendWebhookMessage({ message, channelManager, targetChannelId, user }: Props) {
-  const { announcements, readme, rules, neaEnimerwseis, themata, lyseis, } = discordIds.channels
-  if (([announcements, readme, rules, neaEnimerwseis, themata, lyseis] as string[]).includes(targetChannelId)) throw `MoveMessage: Target Channel ${targetChannelId} is not allowed`
+  const { announcements, readme, rules, neaEnimerwseis, themata, lyseis, starboard } = discordIds.channels
+  if (([announcements, readme, rules, neaEnimerwseis, themata, lyseis, starboard] as string[]).includes(targetChannelId)) throw `MoveMessage: Target Channel ${targetChannelId} is not allowed`
   const targetChannel = await channelManager.fetch(
     targetChannelId
   )!;

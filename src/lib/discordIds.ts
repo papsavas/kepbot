@@ -12,6 +12,7 @@ export const discordIds = {
     neaEnimerwseis: "721310205614227466",
     themata: "722584141127745567",
     lyseis: "692725015518642187",
+    starboard: "1209497161071468577",
   },
   roles: {
     admin: "690268284192424108",

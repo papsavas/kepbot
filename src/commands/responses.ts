@@ -77,6 +77,7 @@ export const responsesCommand = createCommand({
     switch (subcommand) {
       case 'add': {
         const response = interaction.options.getString(data.options[0].options[0].name, true);
+        if (response.length < 2) return await interaction.reply({ content: "Response too short", ephemeral: true });
         const target = interaction.options.getUser(data.options[0].options[1].name, false);
         const trigger = interaction.options.getString(data.options[0].options[2].name, false);
         const userId = interaction.user.id;

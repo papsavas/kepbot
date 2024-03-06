@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import {
 	notifications,
 	type Notification,
@@ -10,7 +10,10 @@ export async function getNotificationsFromTimestamp(
 	timestamp: number,
 ): Promise<Array<Notification>> {
 	return await db.query.notifications.findMany({
-		where: eq(notifications.timestamp, timestamp),
+		where: and(
+			eq(notifications.timestamp, timestamp),
+			eq(notifications.paused, false),
+		),
 	});
 }
 

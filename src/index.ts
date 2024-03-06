@@ -122,7 +122,9 @@ new Elysia()
 			pattern: "0 * * * *", // Every hour
 			name: "notifications",
 			async run() {
-				await sendNotifications(bot, generateTimestamp(new Date()));
+				const key = generateTimestamp(new Date());
+				console.log(`Running Cronjob at ${new Date()}, key: ${key}`);
+				await sendNotifications(bot, key);
 			},
 		}),
 	)

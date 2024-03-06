@@ -21,6 +21,10 @@ export async function insertNotification(notification: NotificationInsert) {
 	return db.insert(notifications).values(notification);
 }
 
-export async function deleteNotification({ id }: Pick<Notification, "id">) {
-	return db.delete(notifications).where(eq(notifications.id, id));
+export async function deleteNotification(props: Pick<Notification, "id">) {
+	return db.delete(notifications).where(eq(notifications.id, props.id));
+}
+
+export async function getAllNotifications() {
+	return db.query.notifications.findMany({});
 }

@@ -1,5 +1,10 @@
 import { Client, Partials } from "discord.js";
-import { chatInputCommands, commands, messageCtxMenuCommands, userCtxMenuCommands } from "./commands";
+import {
+	chatInputCommands,
+	commands,
+	messageCtxMenuCommands,
+	userCtxMenuCommands,
+} from "./commands";
 
 const bot = new Client({
 	intents: [
@@ -10,7 +15,7 @@ const bot = new Client({
 		"GuildBans",
 		"GuildMessageReactions",
 		"GuildIntegrations",
-		"GuildMessages"
+		"GuildMessages",
 	],
 	partials: [
 		Partials.Channel,
@@ -24,73 +29,105 @@ const bot = new Client({
 bot.once("ready", async (client) => {
 	console.log("Bot is ready");
 	console.log(
-		`serving ${client.guilds.cache.map(v => v.name).join(', ')} guilds`,
+		`serving ${client.guilds.cache.map((v) => v.name).join(", ")} guilds`,
 	);
 });
 
 bot.on("messageCreate", async (message) => {
 	try {
-		if (message.guildId !== discordIds.kepGuildId) return
+		if (message.guildId !== discordIds.kepGuildId) return;
 
 		validateRegisteredEmail(message);
 		respondToMessage(message);
 	} catch (error) {
 		console.error(error);
 	}
-})
+});
 
 bot.on("interactionCreate", async (interaction) => {
-	if (interaction.guildId !== discordIds.kepGuildId) return
+	if (interaction.guildId !== discordIds.kepGuildId) return;
 
 	try {
 		if (interaction.isChatInputCommand()) {
-			const command = chatInputCommands.find(c => c.data.name === interaction.commandName);
-			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
+			const command = chatInputCommands.find(
+				(c) => c.data.name === interaction.commandName,
+			);
+			if (!command)
+				return void interaction.reply({
+					content: "Command not found",
+					ephemeral: true,
+				});
 			return void command.execute(interaction, command.data);
 		}
 
 		if (interaction.isMessageContextMenuCommand()) {
-			const command = messageCtxMenuCommands.find(c => c.data.name === interaction.commandName);
-			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
+			const command = messageCtxMenuCommands.find(
+				(c) => c.data.name === interaction.commandName,
+			);
+			if (!command)
+				return void interaction.reply({
+					content: "Command not found",
+					ephemeral: true,
+				});
 			return void command.execute(interaction, command.data);
 		}
 
 		if (interaction.isUserContextMenuCommand()) {
-			const command = userCtxMenuCommands.find(c => c.data.name === interaction.commandName);
-			if (!command) return void interaction.reply({ content: "Command not found", ephemeral: true });
+			const command = userCtxMenuCommands.find(
+				(c) => c.data.name === interaction.commandName,
+			);
+			if (!command)
+				return void interaction.reply({
+					content: "Command not found",
+					ephemeral: true,
+				});
 			return void command.execute(interaction, command.data);
 		}
 
 		if (interaction.isAutocomplete()) {
-			const command = commands.find(c => c.data.name === interaction.commandName);
-			if (!command) return console.error(`autocomplete ${interaction.commandName} not handled`)
+			const command = commands.find(
+				(c) => c.data.name === interaction.commandName,
+			);
+			if (!command)
+				return console.error(
+					`autocomplete ${interaction.commandName} not handled`,
+				);
 			return void command.autocomplete?.(interaction, command.data);
-
 		}
-
 	} catch (error) {
 		console.error(error);
 	}
-
-})
+});
 bot.login(Bun.env.BOT_TOKEN).then(() => console.log("Logged In"));
 
-process.on('unhandledRejection', (reason, p) => {
+process.on("unhandledRejection", (reason, p) => {
 	console.log(`Unhandled Rejection: ${reason}`);
 });
 
-process.on('uncaughtException', (reason, p) => {
+process.on("uncaughtException", (reason, p) => {
 	console.log(`Unhandled Exception: ${reason}`);
 });
 
-import { Elysia } from 'elysia';
+import cron from "@elysiajs/cron";
+import { Elysia } from "elysia";
+import { sendNotifications } from "~/handlers/sendNotifications";
+import { generateTimestamp } from "~/lib/utils";
 import { respondToMessage } from "./handlers/respondToMessage";
 import { validateRegisteredEmail } from "./handlers/validateRegisteredEmail";
 import { discordIds } from "./lib/discordIds";
 
 new Elysia()
-	.get('/', () => 'Hello World')
-	.get('/json', () => ({
-		hello: 'world'
+	.use(
+		cron({
+			pattern: "0 * * * *", // Every hour
+			name: "notifications",
+			async run() {
+				await sendNotifications(bot, generateTimestamp(new Date()));
+			},
+		}),
+	)
+	.get("/", () => "Hello World")
+	.get("/json", () => ({
+		hello: "world",
 	}))
-	.listen(3000)
+	.listen(3000);

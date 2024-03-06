@@ -14,7 +14,7 @@ import {
 export const notifications = mysqlTable("notifications", {
 	id: serial("id").primaryKey(),
 	title: text("title").notNull(),
-	content: text("content"),
+	content: text("content").notNull(),
 	timestamp: int("timestamp").notNull(),
 	paused: boolean("paused").notNull().default(false),
 	channelId: varchar("channelId", { length: 20 }).notNull(),

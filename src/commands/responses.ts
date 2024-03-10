@@ -77,9 +77,18 @@ export const responsesCommand = createCommand({
     switch (subcommand) {
       case 'add': {
         const response = interaction.options.getString(data.options[0].options[0].name, true);
+        if (response.length < 2) return await interaction.reply({ content: "Response too short", ephemeral: true });
         const target = interaction.options.getUser(data.options[0].options[1].name, false);
         const trigger = interaction.options.getString(data.options[0].options[2].name, false);
         const userId = interaction.user.id;
+        const existing = await getUserResponses({ userId: interaction.user.id, })
+        if (existing.some(r => r.text === response && r.targetId == target?.id && r.trigger === trigger)) {
+          await interaction.reply({
+            ephemeral: true,
+            content: `Response ${inlineCode(response)}${target ? ` for ${target.toString()}` : ''}${trigger ? ` with trigger ${inlineCode(trigger)}` : ''} already exists`
+          })
+          return;
+        }
         await insertResponse({ text: response, userId, targetId: target?.id, trigger });
         await interaction.reply({
           ephemeral: true,

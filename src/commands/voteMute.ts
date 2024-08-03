@@ -31,7 +31,12 @@ export const voteMuteCommand = createCommand({
           interaction.targetUser.id
         );
         try {
-          await member.timeout(MUTE_VOTE_TIME, "ΚΕΠ DEMOCRACY");
+          await member.timeout(
+            MUTE_VOTE_TIME,
+            `ΚΕΠ DEMOCRACY by ${reaction.users.cache.reduce((acc, curr) => {
+              return `${acc} ${curr.username} `;
+            }, "")}`
+          );
           await interactionReply.react("✅");
         } catch (err) {
           await interactionReply.react("💥");

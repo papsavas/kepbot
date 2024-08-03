@@ -5,7 +5,7 @@ import {
 } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
 
-const MUTE_VOTES_NEEDED = 5;
+const MUTE_VOTES_NEEDED = 2;
 const MUTE_VOTE_TIME = 1 * 60 * 1000;
 
 export const voteMuteCommand = createCommand({

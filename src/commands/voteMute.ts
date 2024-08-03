@@ -1,6 +1,8 @@
 import {
   ApplicationCommandType,
   UserContextMenuCommandInteraction,
+  bold,
+  italic,
   userMention,
 } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
@@ -24,7 +26,7 @@ export const voteMuteCommand = createCommand({
     await interactionReply.react("👋");
     const collector = interactionReply.createReactionCollector({
       filter: (reaction, user) => reaction.emoji.name === "👋",
-      time: 120000,
+      time: 240000,
     });
     collector.on("collect", async (reaction, user) => {
       const remainingVotes = MUTE_VOTES_NEEDED - reaction.users.cache.size;
@@ -52,6 +54,11 @@ export const voteMuteCommand = createCommand({
         }
         collector.stop("Vote passed");
       }
+    });
+    collector.on("end", async (collected, reason) => {
+      await interaction.editReply({
+        content: `${italic(baseContent)} [${bold("ENDED")}]`,
+      });
     });
   },
 });

@@ -27,7 +27,7 @@ export const voteMuteCommand = createCommand({
       time: 120000,
     });
     collector.on("collect", async (reaction, user) => {
-      const remainingVotes = reaction.users.cache.size - MUTE_VOTES_NEEDED;
+      const remainingVotes = MUTE_VOTES_NEEDED - reaction.users.cache.size;
       if (remainingVotes > 0)
         interaction.editReply({
           content: `${baseContent} (needs ${remainingVotes} votes)`,

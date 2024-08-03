@@ -5,7 +5,7 @@ import {
 } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
 
-const MUTE_VOTES_NEEDED = 5;
+const MUTE_VOTES_NEEDED = 7;
 const MUTE_VOTE_TIME = 60 * 60 * 1000;
 
 export const voteMuteCommand = createCommand({
@@ -16,8 +16,9 @@ export const voteMuteCommand = createCommand({
   execute: async (interaction: UserContextMenuCommandInteraction, data) => {
     if (!interaction.guild)
       return interaction.reply({ content: "Use in guild" });
+    const baseContent = `${userMention(interaction.targetUser.id)} efyges`;
     const interactionReply = await interaction.reply({
-      content: `${userMention(interaction.targetUser.id)} efyges`,
+      content: baseContent,
       fetchReply: true,
     });
     await interactionReply.react("👋");
@@ -26,7 +27,12 @@ export const voteMuteCommand = createCommand({
       time: 120000,
     });
     collector.on("collect", async (reaction, user) => {
-      if (reaction.users.cache.size >= MUTE_VOTES_NEEDED) {
+      const remainingVotes = reaction.users.cache.size - MUTE_VOTES_NEEDED;
+      if (remainingVotes > 0)
+        interaction.editReply({
+          content: `${baseContent} (needs ${remainingVotes} votes)`,
+        });
+      if (remainingVotes <= 0) {
         const member = await interaction.guild!.members.fetch(
           interaction.targetUser.id
         );
@@ -37,6 +43,9 @@ export const voteMuteCommand = createCommand({
               return `${acc} ${curr.username} `;
             }, "")}`
           );
+          await interaction.editReply({
+            content: baseContent,
+          });
           await interactionReply.react("✅");
         } catch (err) {
           await interactionReply.react("💥");

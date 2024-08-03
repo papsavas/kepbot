@@ -27,7 +27,9 @@ export const voteMuteCommand = createCommand({
     const collector = interactionReply.createReactionCollector({
       filter: (reaction, user) => reaction.emoji.name === "👋",
       time: 120000,
+      dispose: true,
     });
+
     collector.on("remove", (reaction, user) => {
       const remainingVotes = MUTE_VOTES_NEEDED - reaction.users.cache.size;
       if (remainingVotes > 0)
@@ -35,6 +37,7 @@ export const voteMuteCommand = createCommand({
           content: `${baseContent} (needs ${remainingVotes} votes)`,
         });
     });
+
     collector.on("collect", async (reaction, user) => {
       const remainingVotes = MUTE_VOTES_NEEDED - reaction.users.cache.size;
       if (remainingVotes > 0)

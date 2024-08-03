@@ -23,14 +23,19 @@ export const voteMuteCommand = createCommand({
     await interactionReply.react("👋");
     const collector = interactionReply.createReactionCollector({
       filter: (reaction, user) => reaction.emoji.name === "👋",
-      time: MUTE_VOTE_TIME,
+      time: 120000,
     });
     collector.on("collect", async (reaction, user) => {
       if (reaction.users.cache.size >= MUTE_VOTES_NEEDED) {
         const member = await interaction.guild!.members.fetch(
           interaction.targetUser.id
         );
-        await member.timeout(120, "ΚΕΠ DEMOCRACY");
+        try {
+          await member.timeout(MUTE_VOTE_TIME, "ΚΕΠ DEMOCRACY");
+          await interactionReply.react("✅");
+        } catch (err) {
+          await interactionReply.react("💥");
+        }
         collector.stop("Vote passed");
       }
     });

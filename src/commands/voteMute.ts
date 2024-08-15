@@ -152,7 +152,7 @@ export const voteMuteCommand = createCommand({
           ) {
             await interaction.editReply({
               content: `Missing Permissions 💥`,
-              components: [disabledRow],
+              components: [],
               embeds: [resultEmbed],
             });
           }

@@ -18,7 +18,7 @@ import {
 import { createCommand } from "~/lib/createCommand";
 
 const MIN_VOTES_REQUIRED = 2;
-const MUTE_VOTE_TIME = 10 * 60 * 1000;
+const MUTE_VOTE_TIME = 30 * 60 * 1000;
 const DISPOSE_TIME = 2 * 60 * 1000;
 const efygesButtonId = "efyges-button";
 const emeinesButtonId = "emeines-button";
@@ -137,7 +137,11 @@ export const voteMuteCommand = createCommand({
           await interaction.editReply({
             content: `${userMention(userId)} 👋 efyges`,
             components: [disabledRow],
-            embeds: [resultEmbed],
+            embeds: [
+              resultEmbed.setFooter({
+                text: `Ta leme se ${MUTE_VOTE_TIME / (60 * 1000)} lepta`,
+              }),
+            ],
           });
         } catch (err) {
           if (

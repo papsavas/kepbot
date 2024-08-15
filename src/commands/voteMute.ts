@@ -3,6 +3,7 @@ import {
   ApplicationCommandType,
   ButtonBuilder,
   ButtonStyle,
+  Colors,
   ComponentType,
   DiscordAPIError,
   Embed,
@@ -64,6 +65,7 @@ export const voteMuteCommand = createCommand({
         name: member.displayName,
         iconURL: member.user.displayAvatarURL(),
       },
+      color: Colors.Blue,
       title: interaction.targetMessage.content,
       fields: [
         {

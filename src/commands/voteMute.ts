@@ -133,7 +133,7 @@ export const voteMuteCommand = createCommand({
         try {
           await member.timeout(MUTE_VOTE_TIME, `ΚΕΠ DEMOCRACY`);
           await interaction.editReply({
-            content: `${userMention(userId)} efyges`,
+            content: `${userMention(userId)} 👋 efyges`,
             components: [disabledRow],
             embeds: [resultEmbed],
           });
@@ -143,7 +143,7 @@ export const voteMuteCommand = createCommand({
             RESTJSONErrorCodes.MissingPermissions
           ) {
             await interaction.editReply({
-              content: `Missing Permissions`,
+              content: `Missing Permissions 💥`,
               components: [disabledRow],
               embeds: [resultEmbed],
             });
@@ -151,11 +151,16 @@ export const voteMuteCommand = createCommand({
         }
       } else {
         await interaction.editReply({
-          content: `${userMention(userId)} emeines`,
+          content: `${userMention(userId)} 😊 emeines`,
           components: [disabledRow],
           embeds: [resultEmbed],
         });
       }
+      interaction.followUp({
+        content: `Results are in Folks. ${
+          efygesCount + emeinesCount
+        } votes 👀 🥁`,
+      });
     });
   },
 });

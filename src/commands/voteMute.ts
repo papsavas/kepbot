@@ -16,7 +16,7 @@ import {
 } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
 
-const MIN_VOTES_REQUIRED = 5;
+const MIN_VOTES_REQUIRED = 2;
 const MUTE_VOTE_TIME = 10 * 60 * 1000;
 const DISPOSE_TIME = 2 * 60 * 1000;
 const efygesButtonId = "efyges-button";

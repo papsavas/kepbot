@@ -153,7 +153,7 @@ export const voteMuteCommand = createCommand({
         await interaction.editReply({
           content: `${userMention(userId)} emeines`,
           components: [disabledRow],
-          embeds: interactionReply.embeds,
+          embeds: [resultEmbed],
         });
       }
     });

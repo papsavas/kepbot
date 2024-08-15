@@ -127,8 +127,8 @@ export const voteMuteCommand = createCommand({
       if (collected.size < MIN_VOTES_REQUIRED)
         return void interaction.editReply({
           content: "Not enough votes",
+          components: [],
           embeds: [resultEmbed],
-          components: [disabledRow],
         });
 
       if (efygesCount > emeinesCount) {
@@ -136,7 +136,7 @@ export const voteMuteCommand = createCommand({
           await member.timeout(MUTE_VOTE_TIME, `ΚΕΠ DEMOCRACY`);
           await interaction.editReply({
             content: `${userMention(userId)} 👋 efyges`,
-            components: [disabledRow],
+            components: [],
             embeds: [
               resultEmbed
                 .setFooter({
@@ -160,7 +160,7 @@ export const voteMuteCommand = createCommand({
       } else {
         await interaction.editReply({
           content: `${userMention(userId)} 😊 emeines`,
-          components: [disabledRow],
+          components: [],
           embeds: [resultEmbed.setColor(Colors.Green)],
         });
       }

@@ -65,7 +65,7 @@ export const voteMuteCommand = createCommand({
         name: member.displayName,
         iconURL: member.user.displayAvatarURL(),
       },
-      color: Colors.Blue,
+      color: Colors.Yellow,
       title: interaction.targetMessage.content,
       fields: [
         {
@@ -138,9 +138,11 @@ export const voteMuteCommand = createCommand({
             content: `${userMention(userId)} 👋 efyges`,
             components: [disabledRow],
             embeds: [
-              resultEmbed.setFooter({
-                text: `Ta leme se ${MUTE_VOTE_TIME / (60 * 1000)} lepta`,
-              }),
+              resultEmbed
+                .setFooter({
+                  text: `Ta leme se ${MUTE_VOTE_TIME / (60 * 1000)} lepta`,
+                })
+                .setColor(Colors.Red),
             ],
           });
         } catch (err) {
@@ -159,7 +161,7 @@ export const voteMuteCommand = createCommand({
         await interaction.editReply({
           content: `${userMention(userId)} 😊 emeines`,
           components: [disabledRow],
-          embeds: [resultEmbed],
+          embeds: [resultEmbed.setColor(Colors.Green)],
         });
       }
       interaction.followUp({

@@ -1,74 +1,161 @@
 import {
+  ActionRowBuilder,
   ApplicationCommandType,
-  UserContextMenuCommandInteraction,
-  bold,
-  italic,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  DiscordAPIError,
+  Embed,
+  EmbedBuilder,
+  MessageContextMenuCommandInteraction,
+  RESTJSONErrorCodes,
+  TimestampStyles,
+  User,
+  time,
   userMention,
 } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
 
-const MUTE_VOTES_NEEDED = 8;
+const MIN_VOTES_REQUIRED = 3;
 const MUTE_VOTE_TIME = 10 * 60 * 1000;
+const DISPOSE_TIME = 2 * 60 * 1000;
+const efygesButtonId = "efyges-button";
+const emeinesButtonId = "emeines-button";
 
 export const voteMuteCommand = createCommand({
   data: {
     name: "efyges",
-    type: ApplicationCommandType.User,
+    type: ApplicationCommandType.Message,
   },
-  execute: async (interaction: UserContextMenuCommandInteraction, data) => {
+  execute: async (interaction: MessageContextMenuCommandInteraction, data) => {
     if (!interaction.guild)
       return interaction.reply({ content: "Use in guild" });
-    const baseContent = `${userMention(interaction.targetUser.id)} efyges`;
-    const interactionReply = await interaction.reply({
-      content: baseContent,
-      fetchReply: true,
+    const userId = interaction.targetMessage.author.id;
+    const member = await interaction.guild.members.fetch(userId);
+
+    const efygesButton = new ButtonBuilder({
+      customId: efygesButtonId,
+      label: "efyges",
+      style: ButtonStyle.Danger,
+      emoji: "👋",
     });
-    await interactionReply.react("👋");
-    const collector = interactionReply.createReactionCollector({
-      filter: (reaction, user) => reaction.emoji.name === "👋",
-      time: 120000,
+    const emeinesButton = new ButtonBuilder({
+      customId: emeinesButtonId,
+      label: "emeines",
+      style: ButtonStyle.Success,
+      emoji: "😊",
+    });
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      efygesButton,
+      emeinesButton
+    );
+
+    const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      ButtonBuilder.from(efygesButton)
+        .setDisabled(true)
+        .setCustomId(`${efygesButtonId}-disabled`),
+      ButtonBuilder.from(emeinesButton)
+        .setDisabled(true)
+        .setCustomId(`${emeinesButtonId}-disabled`)
+    );
+
+    const embed = new EmbedBuilder({
+      author: {
+        name: member.displayName,
+        iconURL: member.user.displayAvatarURL(),
+      },
+      title: interaction.targetMessage.content,
+      fields: [
+        {
+          name: "Vote ends in",
+          value: time(
+            new Date(Date.now() + DISPOSE_TIME),
+            TimestampStyles.RelativeTime
+          ),
+        },
+      ],
+    });
+
+    const interactionReply = await interaction.reply({
+      content: `${userMention(userId)} efyges ?`,
+      fetchReply: true,
+      components: [row],
+      embeds: [embed],
+    });
+
+    const collector = interactionReply.createMessageComponentCollector({
+      componentType: ComponentType.Button,
+      filter: (button, collected) => {
+        const userId = button.user.id;
+        return ![...collected.values()].some(({ user }) => user.id === userId);
+      },
+      time: DISPOSE_TIME,
       dispose: true,
     });
 
-    collector.on("remove", (reaction, user) => {
-      const remainingVotes = MUTE_VOTES_NEEDED - reaction.users.cache.size;
-      if (remainingVotes > 0)
-        interaction.editReply({
-          content: `${baseContent} (needs ${remainingVotes} votes)`,
-        });
+    collector.on("collect", async (i) => {
+      i.reply({
+        ephemeral: true,
+        content: "Thanks for participating in ΚΕΠ DEMOCRACY",
+      });
     });
 
-    collector.on("collect", async (reaction, user) => {
-      const remainingVotes = MUTE_VOTES_NEEDED - reaction.users.cache.size;
-      if (remainingVotes > 0)
-        interaction.editReply({
-          content: `${baseContent} (needs ${remainingVotes} votes)`,
-        });
-      if (remainingVotes <= 0) {
-        const member = await interaction.guild!.members.fetch(
-          interaction.targetUser.id
-        );
-        try {
-          await member.timeout(
-            MUTE_VOTE_TIME,
-            `ΚΕΠ DEMOCRACY by ${reaction.users.cache.reduce((acc, curr) => {
-              return `${acc} ${curr.username} `;
-            }, "")}`
-          );
-          await interaction.editReply({
-            content: baseContent,
-          });
-          await interactionReply.react("✅");
-        } catch (err) {
-          await interactionReply.react("💥");
-        }
-        collector.stop("Vote passed");
-      }
-    });
-    collector.on("end", async (collected, reason) => {
-      await interaction.editReply({
-        content: `${italic(baseContent)} [${bold("ENDED")}]`,
+    collector.on("ignore", (i) => {
+      i.reply({
+        ephemeral: true,
+        content: "You have already voted",
       });
+    });
+
+    collector.on("end", async (collected, reason) => {
+      const { efygesCount, emeinesCount } = collected.reduce(
+        (acc, curr) => {
+          if (curr.customId === efygesButtonId) acc.efygesCount++;
+          else if (curr.customId === emeinesButtonId) acc.emeinesCount++;
+          return acc;
+        },
+        { efygesCount: 0, emeinesCount: 0 }
+      );
+
+      const resultEmbed = EmbedBuilder.from(embed).addFields([
+        { name: "Mute", value: `${efygesCount}`, inline: true },
+        { name: "Stay", value: `${emeinesCount}`, inline: true },
+      ]);
+
+      if (collected.size < MIN_VOTES_REQUIRED)
+        return void interaction.editReply({
+          content: "Not enough votes",
+          embeds: [resultEmbed],
+          components: [disabledRow],
+        });
+
+      if (efygesCount > emeinesCount) {
+        try {
+          await member.timeout(MUTE_VOTE_TIME, `ΚΕΠ DEMOCRACY`);
+          await interaction.editReply({
+            content: `${userMention(userId)} efyges`,
+            components: [disabledRow],
+            embeds: [resultEmbed],
+          });
+        } catch (err) {
+          if (
+            (err as DiscordAPIError).code ===
+            RESTJSONErrorCodes.MissingPermissions
+          ) {
+            await interaction.editReply({
+              content: `Missing Permissions`,
+              components: [disabledRow],
+              embeds: [resultEmbed],
+            });
+          }
+        }
+      } else {
+        await interaction.editReply({
+          content: `${userMention(userId)} emeines`,
+          components: [disabledRow],
+          embeds: interactionReply.embeds,
+        });
+      }
     });
   },
 });

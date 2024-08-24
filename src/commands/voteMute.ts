@@ -34,7 +34,10 @@ export const voteMuteCommand = createCommand({
     const userId = interaction.targetMessage.author.id;
     const member = await interaction.guild.members.fetch(userId);
 
-    if (member.communicationDisabledUntil !== null) {
+    if (
+      !!member.communicationDisabledUntilTimestamp &&
+      member.communicationDisabledUntilTimestamp > Date.now()
+    ) {
       return interaction.reply({
         content: "Member is already muted",
         ephemeral: true,

@@ -16,6 +16,7 @@ import {
   userMention,
 } from "discord.js";
 import { createCommand } from "~/lib/createCommand";
+import { discordIds } from "~/lib/discordIds";
 
 const MIN_VOTES_REQUIRED = 2;
 const MUTE_VOTE_TIME = 30 * 60 * 1000;
@@ -32,6 +33,13 @@ export const voteMuteCommand = createCommand({
     if (!interaction.guild)
       return interaction.reply({ content: "Use in guild" });
     const userId = interaction.targetMessage.author.id;
+
+    if (interaction.targetMessage.author.bot)
+      return interaction.reply({
+        content: "ΚΕΠ DEMOCRACY cannot be used on bots",
+        ephemeral: true,
+      });
+
     const member = await interaction.guild.members.fetch(userId);
 
     if (
@@ -40,6 +48,13 @@ export const voteMuteCommand = createCommand({
     ) {
       return interaction.reply({
         content: "Member is already muted",
+        ephemeral: true,
+      });
+    }
+
+    if (member.roles.cache.has(discordIds.roles.moderator)) {
+      return interaction.reply({
+        content: "ΚΕΠ DEMOCRACY cannot be used on moderators",
         ephemeral: true,
       });
     }

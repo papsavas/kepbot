@@ -197,9 +197,11 @@ export const voteMuteCommand = createCommand({
         }
       } else {
         await interaction.editReply({
-          content: `${userMention(userId)} 😊 emeines. ${userMention(
-            interaction.user.id
-          )} efyges 👋`,
+          content: `${userMention(userId)} 😊 emeines.${
+            efygesCount < emeinesCount
+              ? ` ${userMention(interaction.user.id)} efyges 👋`
+              : ""
+          } `,
           components: [],
           embeds: [resultEmbed.setColor(Colors.Green)],
         });

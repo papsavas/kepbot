@@ -120,6 +120,7 @@ export const voteMuteCommand = createCommand({
       componentType: ComponentType.Button,
       filter: (button, collected) => {
         const userId = button.user.id;
+        if (userId === interaction.targetMessage.author.id) return false;
         return ![...collected.values()].some(({ user }) => user.id === userId);
       },
       time: DISPOSE_TIME,
@@ -134,6 +135,12 @@ export const voteMuteCommand = createCommand({
     });
 
     collector.on("ignore", (i) => {
+      if (i.user.id === interaction.targetMessage.author.id)
+        return void i.reply({
+          ephemeral: true,
+          content: "You're on trial. You're not allowed to vote",
+        });
+
       i.reply({
         ephemeral: true,
         content: "You have already voted",

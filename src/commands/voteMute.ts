@@ -40,6 +40,12 @@ export const voteMuteCommand = createCommand({
         ephemeral: true,
       });
 
+    if (interaction.user.id === interaction.targetMessage.author.id)
+      return interaction.reply({
+        content: "You can't pick yourself",
+        ephemeral: true,
+      });
+
     const member = await interaction.guild.members.fetch(userId);
 
     if (
@@ -190,13 +196,15 @@ export const voteMuteCommand = createCommand({
           components: [],
           embeds: [resultEmbed.setColor(Colors.Green)],
         });
-        const interactionMember = await interaction.guild!.members.fetch(
-          interaction.user.id
-        );
-        await interactionMember.timeout(
-          MUTE_VOTE_TIME,
-          `ΚΕΠ DEMOCRACY CONSEQUENCES`
-        );
+        if (efygesCount < emeinesCount) {
+          const interactionMember = await interaction.guild!.members.fetch(
+            interaction.user.id
+          );
+          await interactionMember.timeout(
+            MUTE_VOTE_TIME,
+            `ΚΕΠ DEMOCRACY CONSEQUENCES`
+          );
+        }
       }
       interaction.followUp({
         content: `Results are in Folks. ${

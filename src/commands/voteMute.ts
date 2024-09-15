@@ -91,7 +91,7 @@ export const voteMuteCommand = createCommand({
         iconURL: member.user.displayAvatarURL(),
       },
       color: Colors.Yellow,
-      title: interaction.targetMessage.content,
+      title: interaction.targetMessage.content.slice(0, 256),
       fields: [
         {
           name: "Vote ends in",
@@ -184,10 +184,19 @@ export const voteMuteCommand = createCommand({
         }
       } else {
         await interaction.editReply({
-          content: `${userMention(userId)} 😊 emeines`,
+          content: `${userMention(userId)} 😊 emeines. ${userMention(
+            interaction.user.id
+          )} efyges 👋`,
           components: [],
           embeds: [resultEmbed.setColor(Colors.Green)],
         });
+        const interactionMember = await interaction.guild!.members.fetch(
+          interaction.user.id
+        );
+        await interactionMember.timeout(
+          MUTE_VOTE_TIME,
+          `ΚΕΠ DEMOCRACY CONSEQUENCES`
+        );
       }
       interaction.followUp({
         content: `Results are in Folks. ${

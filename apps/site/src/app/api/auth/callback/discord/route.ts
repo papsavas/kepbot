@@ -56,6 +56,7 @@ export async function GET(req: NextRequest) {
       name,
       value,
       secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
       expires: new Date(Date.now() + token.expires_in * 1000),
     });
 

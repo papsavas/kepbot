@@ -7,10 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { db } from "@kepbot/db";
+import { getUserResponses } from "@kepbot/db/responses";
+import { getAuthenticatedUser } from "~/auth";
 
 export default async function ResponsesPage() {
-  const responses = await db.query.responses.findMany();
+  const { userId } = await getAuthenticatedUser();
+  const responses = await getUserResponses({ userId });
 
   return (
     <section className="flex max-h-[40svh] overflow-auto">

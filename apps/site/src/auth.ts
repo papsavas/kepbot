@@ -1,9 +1,7 @@
+import "server-only";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { createJWT, validateJWT } from "oslo/jwt";
 import { z } from "zod";
-
-import "server-only";
 import { TimeSpan } from "oslo";
 
 const payloadSchema = z.object({
@@ -14,6 +12,13 @@ const payloadSchema = z.object({
 export const AuthJWTName = "auth";
 export const AuthJWTAlgo = "HS256";
 
+function getAuthJWTSecret() {
+  const AUTH_SECRET = process.env.AUTH_SECRET;
+  if (!AUTH_SECRET) throw new Error("AUTH_SECRET is not set");
+
+  return new TextEncoder().encode(AUTH_SECRET);
+}
+
 export async function createAuthJWT({
   payload,
   expiresInSeconds,
@@ -21,10 +26,7 @@ export async function createAuthJWT({
   payload: z.infer<typeof payloadSchema>;
   expiresInSeconds?: number;
 }) {
-  const AUTH_SECRET = process.env.AUTH_SECRET;
-  if (!AUTH_SECRET) throw new Error("AUTH_SECRET is not set");
-
-  const secret = new TextEncoder().encode(AUTH_SECRET);
+  const secret = getAuthJWTSecret();
 
   const JWT = await createJWT(AuthJWTAlgo, secret, payload, {
     expiresIn: expiresInSeconds
@@ -39,6 +41,11 @@ export async function createAuthJWT({
   } as const;
 }
 
+export async function validateAuthJWT(token: string) {
+  const secret = getAuthJWTSecret();
+  return await validateJWT(AuthJWTAlgo, secret, token);
+}
+
 export async function getUser() {
   const auth = cookies().get("auth");
   if (!auth) return null;
@@ -47,19 +54,14 @@ export async function getUser() {
   if (!AUTH_SECRET) throw new Error("AUTH_SECRET is not set");
 
   try {
-    const JWT = await validateJWT(
-      "HS256",
-      new TextEncoder().encode(AUTH_SECRET),
-      auth.value,
-    );
+    const JWT = await validateAuthJWT(auth.value);
 
     if (JWT.expiresAt && JWT.expiresAt < new Date())
       throw new Error("JWT expired");
-
+    console.log("getUser:", JWT.payload);
     return payloadSchema.parse(JWT.payload);
   } catch (error) {
-    cookies().delete("auth");
-    redirect("/");
+    console.log("validate JWT error", error);
   }
 }
 

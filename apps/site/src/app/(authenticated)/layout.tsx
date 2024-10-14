@@ -1,5 +1,6 @@
 import { getUser } from "~/auth";
 import { DiscordSignIn } from "~/components/DiscordSignIn";
+import { AuthProvider } from "~/context/AuthProvider";
 
 export default async function AuthenticatedLayout({
   children,
@@ -12,5 +13,5 @@ export default async function AuthenticatedLayout({
         <DiscordSignIn />
       </div>
     );
-  return children;
+  return <AuthProvider user={user}>{children}</AuthProvider>;
 }

@@ -1,5 +1,5 @@
 import { and, eq, isNull, or, sql } from "drizzle-orm";
-import type { NonNullableFields } from "~/types";
+import { type NonNullableFields } from "./types";
 import { db } from ".";
 import {
   responses,

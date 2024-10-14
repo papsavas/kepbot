@@ -33,8 +33,6 @@ export async function GET(req: NextRequest) {
       scope: string;
     };
 
-    console.log({ token });
-
     const res = await fetch("https://discord.com/api/users/@me", {
       headers: {
         Authorization: `${token.token_type} ${token.access_token}`,

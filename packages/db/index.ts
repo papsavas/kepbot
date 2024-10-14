@@ -5,7 +5,13 @@ import * as responses from "./schema/responses";
 const DATABASE_URL = process.env.DATABASE_URL as string;
 
 async function getConnection() {
-  const connection = await mysql.createConnection(DATABASE_URL);
+  const connection = mysql.createPool({
+    enableKeepAlive: true,
+    maxIdle: 0,
+    idleTimeout: 60000,
+    uri: DATABASE_URL,
+  });
+
   const db = drizzle(connection, {
     schema: { ...responses },
     mode: "default",
